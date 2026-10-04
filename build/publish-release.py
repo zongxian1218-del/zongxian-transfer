@@ -24,10 +24,15 @@ API = "https://api.github.com"
 UPLOADS = "https://uploads.github.com"
 
 ASSETS = [
-    ("dist/棕仙的传输软件-自解压版.exe", "Windows 自解压版（推荐，双击即用）"),
-    ("dist/zongxian-portable-win64.zip", "Windows 便携包（解压即用）"),
-    ("dist/swiftdrop.html", "网页版单文件（直接发给朋友）"),
-    ("dist/zongxian-transfer-guide.md", "使用说明"),
+    # (本地文件, 上传后的附件名(ASCII，GitHub 会剥掉中文), 中文标签)
+    ("dist/棕仙的传输软件-自解压版.exe", "ZongxianTransfer-1.0-selfextract.exe",
+     "Windows 自解压版（推荐，双击即用）"),
+    ("dist/zongxian-portable-win64.zip", "zongxian-portable-win64.zip",
+     "Windows 便携包（解压即用）"),
+    ("dist/swiftdrop.html", "swiftdrop.html",
+     "网页版单文件（直接发给朋友）"),
+    ("dist/zongxian-transfer-guide.md", "zongxian-transfer-guide.md",
+     "使用说明"),
 ]
 
 ISSUES = [
@@ -134,21 +139,21 @@ def main() -> int:
     if args.assets:
         st, have = call("GET", f"{API}/repos/{user}/{args.repo}/releases/{rel['id']}/assets", args.token)
         names = {a["name"] for a in have} if isinstance(have, list) else set()
-        for rel_path, label in ASSETS:
+        for rel_path, asset_name, label in ASSETS:
             p = os.path.join(ROOT, rel_path.replace("/", os.sep))
             if not os.path.isfile(p):
                 print(f"  跳过（文件不存在）：{rel_path}")
                 continue
-            name = os.path.basename(p)
-            if name in names:
-                print(f"  已存在，跳过：{name}")
+            if asset_name in names:
+                print(f"  已存在，跳过：{asset_name}")
                 continue
             raw = open(p, "rb").read()
-            ctype = mimetypes.guess_type(name)[0] or "application/octet-stream"
+            ctype = mimetypes.guess_type(asset_name)[0] or "application/octet-stream"
             st, up = call("POST",
-                          f"{UPLOADS}/repos/{user}/{args.repo}/releases/{rel['id']}/assets?name={urllib.parse.quote(name)}",
+                          f"{UPLOADS}/repos/{user}/{args.repo}/releases/{rel['id']}/assets"
+                          f"?name={urllib.parse.quote(asset_name)}&label={urllib.parse.quote(label)}",
                           args.token, raw=raw, ctype=ctype)
-            print(f"  {'已上传' if st in (200, 201) else '上传失败'} {name}"
+            print(f"  {'已上传' if st in (200, 201) else '上传失败'} {asset_name}"
                   f"（{len(raw) / 1048576:.2f} MB）" + ("" if st in (200, 201) else f"：{up.get('message')}"))
 
     # 3) good first issue
