@@ -14,7 +14,7 @@ ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 WEB = os.path.join(ROOT, 'src', 'web')
 DIST = os.path.join(ROOT, 'dist')
 
-ORDER = ['util.js', 'qr.js', 'signaling.js', 'rtc.js', 'relay.js', 'transfer.js', 'sync.js', 'app.js']
+ORDER = ['util.js', 'qr.js', 'signaling.js', 'rtc.js', 'relay.js', 'transfer.js', 'sync.js', 'lang.js', 'app.js']
 VERSION = '1.0'
 APP_NAME = '棕仙的传输软件'
 

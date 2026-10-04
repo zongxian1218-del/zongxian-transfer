@@ -1,0 +1,154 @@
+(function() {
+  const dict = {
+    "朋友间大文件直传与文件夹同步": "P2P Large File Transfer & Folder Sync",
+    "信令通道状态": "Signaling channel status",
+    "信令：未连接": "Signal: Not connected",
+    "与对方的直连状态": "Direct connection status",
+    "未连接": "Not connected",
+    "切换浅色/深色": "Toggle Light/Dark",
+    "使用帮助": "Help",
+    "设置": "Settings",
+    "不装软件、不限速、不要公网 IP": "No installation, unlimited speed, no public IP needed",
+    "点对点直连传输大文件，浏览器之间加密传送；连不上会自动切换信令线路，也可配 TURN 中继兜底。": "P2P direct transfer for large files, encrypted browser-to-browser; automatically switches signaling lines if connection fails, can also configure TURN relay as fallback. ",
+    "文件内容不经过任何服务器。": "File content does not pass through any server.",
+    "端到端加密": "End-to-End Encryption",
+    "不落服务器": "No Server Relay",
+    "零安装": "Zero Installation",
+    "我要发送（生成取件码）": "I want to send (Generate code)",
+    "把取件码或链接发给朋友，等他连进来。": "Send the code or link to your friend and wait for them to connect.",
+    "生成取件码": "Generate Code",
+    "取件码 · 9 位": "9-Digit Code",
+    "念给朋友听 / 长按选中也可以复制": "Read to friend / Long press to copy",
+    "扫码打开": "Scan to open",
+    "分享链接": "Share Link",
+    "复制链接": "Copy Link",
+    "等待朋友连接…": "Waiting for friend to connect...",
+    "我要接收（输入取件码）": "I want to receive (Enter code)",
+    "输入朋友给你的 9 位取件码。": "Enter the 9-digit code given by your friend.",
+    "取件码": "Code",
+    "连接": "Connect",
+    "提示：手机可以直接扫对方屏幕上的二维码。": "Tip: Phones can directly scan the QR code on the other's screen.",
+    "为什么快？": "Why is it fast?",
+    "文件在两台设备之间直接跑，不落服务器、不排队、不限速。速度上限 = 你们双方的上行带宽或局域网带宽。": "Files travel directly between two devices without servers, queues, or speed limits. Max speed = your upload or LAN bandwidth.",
+    "安全吗？": "Is it safe?",
+    "连接由 DTLS 端到端加密，取件码只用于牵线；服务器只帮忙交换连接地址，看不到文件内容。": "Connection is E2E encrypted via DTLS, the code is only for matchmaking; servers only exchange connection addresses and can't see files.",
+    "连不上怎么办？": "What if it can't connect?",
+    "程序会自动尝试多条线路；若双方都在严格的企业网/运营商大内网，可用 TURN 中继兜底（见使用说明）。": "The program tries multiple lines automatically; if both are under strict NATs, TURN relays can be used as a fallback (see guide).",
+    "运行日志": "Run Log",
+    "清空": "Clear",
+    "对方": "Peer",
+    "断开连接": "Disconnect",
+    "文件传输": "File Transfer",
+    "文件夹同步": "Folder Sync",
+    "把文件或文件夹拖到这里": "Drag and drop files or folders here",
+    "松开鼠标立即开始传输，文件不经过服务器": "Release mouse to start transferring instantly, no servers involved",
+    "选择文件": "Select File",
+    "选择文件夹": "Select Folder",
+    "接收位置：": "Save Location: ",
+    "浏览器下载目录（大文件请选择文件夹）": "Browser Download Dir (for large files, please pick a folder)",
+    "选择保存目录": "Select Save Directory",
+    "重新选择": "Reselect",
+    "总速度": "Total Speed",
+    "文件夹双向同步": "Folder Two-Way Sync",
+    "选一个本地文件夹，双方各自的文件夹保持内容一致（支持增量、断点续传、自动监控）。": "Choose a local folder, both sides will keep contents identical (supports incremental, resume, auto-watch).",
+    "选择本地同步文件夹": "Select Local Sync Folder",
+    "未选择": "Not selected",
+    "同步方式": "Sync Mode",
+    "双向（互相同步）": "Two-way (mutual sync)",
+    "单向：只把本机推给对方": "One-way: Push local to peer only",
+    "单向：只把对方拉过来": "One-way: Pull from peer only",
+    "同步删除": "Sync Deletions",
+    "自动监控（每 5 秒，仅发起方生效）": "Auto-Watch (every 5s, only active on initiator)",
+    "立即同步": "Sync Now",
+    "提示：双方都要在各自机器上选择同步文件夹，否则对方会提示\"未设置同步目录\"。": "Tip: Both sides must select a sync folder on their machines, otherwise peer will see \"Sync dir not set\".",
+    "同步日志": "Sync Log",
+    "连接诊断": "Connection Diagnostics",
+    "连接后自动开始采样（每秒一次）": "Auto sampling starts after connection (1/s)",
+    "复制诊断信息": "Copy Diagnostic Info",
+    "链路": "Link",
+    "等待连接": "Waiting to connect",
+    "延迟 RTT": "Latency RTT",
+    "抖动": "Jitter",
+    "可用带宽": "Available BW",
+    "实时速度": "Real-time Speed",
+    "峰值 / 平均": "Peak / Avg",
+    "卡顿次数": "Stall Count",
+    "候选类型": "Candidate Type",
+    "连接后这里会给出\"慢在哪\"的判断。": "After connection, judgment on \"what's slow\" will appear here.",
+    "改动在下次建立连接时生效；留空即用默认线路。": "Changes take effect on next connection; leave blank for defaults.",
+    "设备名称（对方看到的名字）": "Device Name (visible to peer)",
+    "TURN 中继服务器（可选，双方都是严格 NAT 时填）": "TURN Relay Server (optional, for strict NAT)",
+    "中继服务器（P2P 打洞失败时自动回退；一台 5 元/月的公网 VPS 即可）": "Relay Server (fallback if P2P fails)",
+    "强制走中继（跳过 P2P，测试/极端网络用）": "Force Relay (skip P2P, for testing/extreme networks)",
+    "TURN 用户名": "TURN Username",
+    "TURN 密码": "TURN Password",
+    "数据分片大小": "Data Chunk Size",
+    "16 KB（最稳）": "16 KB (Most stable)",
+    "64 KB（推荐）": "64 KB (Recommended)",
+    "128 KB（高速）": "128 KB (High speed)",
+    "256 KB（极限）": "256 KB (Extreme)",
+    "发送缓冲上限": "Send Buffer Limit",
+    "4 MB（保守）": "4 MB (Conservative)",
+    "12 MB（推荐，浏览器硬上限约 16MB）": "12 MB (Recommended)",
+    "信令服务器（每行一个，按顺序尝试）": "Signaling Servers (one per line, tried in order)",
+    "清空断点续传缓存": "Clear Resume Cache",
+    "清空同步状态": "Clear Sync State",
+    "取消": "Cancel",
+    "保存": "Save",
+    "P2P 直连 · 端到端加密 · 不限速 · 无广告": "P2P Direct · E2E Encryption · Unlimited Speed · Ad-free"
+  };
+
+  let isEn = false;
+  function toggleLang() {
+    isEn = !isEn;
+    localStorage.setItem('zongxian.lang', isEn ? 'en' : 'zh');
+    document.documentElement.lang = isEn ? 'en' : 'zh-CN';
+    
+    // Simple DOM text replacement
+    function walk(node) {
+      if (node.nodeType === 3) { // Text node
+        const text = node.nodeValue.trim();
+        if (text) {
+          // If switching to EN and we have a translation
+          if (isEn && dict[text]) {
+            node._zh = text;
+            node.nodeValue = node.nodeValue.replace(text, dict[text]);
+          } 
+          // If switching to ZH and we stored the original
+          else if (!isEn && node._zh) {
+            node.nodeValue = node.nodeValue.replace(text, node._zh);
+          }
+        }
+      } else if (node.nodeType === 1 && node.nodeName !== 'SCRIPT' && node.nodeName !== 'STYLE') {
+        if (isEn && node.placeholder && dict[node.placeholder]) {
+           node._zh_placeholder = node.placeholder;
+           node.placeholder = dict[node.placeholder];
+        } else if (!isEn && node._zh_placeholder) {
+           node.placeholder = node._zh_placeholder;
+        }
+        for (let i = 0; i < node.childNodes.length; i++) {
+          walk(node.childNodes[i]);
+        }
+      }
+    }
+    walk(document.body);
+  }
+
+  window.addEventListener('DOMContentLoaded', () => {
+    const btn = document.createElement('button');
+    btn.className = 'icon';
+    btn.title = 'Switch Language / 切换语言';
+    btn.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><path d="M5 8l6 6M4 14l6-6 2-3M2 5h12M7 2h1M22 22l-5-10-5 10M14 18h6"/></svg>';
+    btn.onclick = toggleLang;
+    
+    const chips = document.querySelector('.chips');
+    if (chips) {
+      chips.insertBefore(btn, chips.firstChild);
+    }
+    
+    const saved = localStorage.getItem('zongxian.lang');
+    if (saved === 'en' || (saved !== 'zh' && navigator.language && !navigator.language.startsWith('zh'))) {
+      toggleLang();
+    }
+  });
+})();
