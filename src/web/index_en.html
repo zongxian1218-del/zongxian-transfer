@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="auto">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<meta name="description" content="棕仙的传输软件：浏览器之间点对点直传大文件与Folder Sync，End-to-End Encryption、不限速、No Server Relay。">
+<title>__APP_NAME__ —— P2P Large File Transfer & Folder Sync</title>
+<link rel="icon" href="__APP_ICON_SMALL__">
+<link rel="apple-touch-icon" href="__APP_ICON__">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- 标题栏 -->
+  <header class="top">
+    <div class="brand">
+      <img class="applogo" src="__APP_ICON__" alt="">
+      <span class="brandname">__APP_NAME__</span>
+      <small id="verText">v__APP_VER__</small>
+    </div>
+    <div class="chips">
+      <span class="chip" id="sigChip" title="Signaling channel status">Signal: Not connected</span>
+      <span class="chip" id="connChip" title="Direct connection status">Not connected</span>
+      <span class="chip hidden" id="rttChip"></span>
+      <span class="topdiv" aria-hidden="true"></span>
+      <button class="icon" id="btnTheme" title="Toggle Light/Dark" aria-label="Toggle Theme">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="4.2"/><path d="M12 2.6v2.2M12 19.2v2.2M2.6 12h2.2M19.2 12h2.2M5.4 5.4l1.6 1.6M17 17l1.6 1.6M18.6 5.4L17 7M7 17l-1.6 1.6"/>
+        </svg>
+      </button>
+      <button class="icon" id="btnHelp" title="Help" aria-label="Help">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/><path d="M9.4 9.2a2.7 2.7 0 1 1 3.4 2.6c-.6.2-.9.7-.9 1.3v.5"/><circle cx="12" cy="17" r=".9" fill="currentColor" stroke="none"/>
+        </svg>
+      </button>
+      <button class="icon" id="btnSettings" title="Settings" aria-label="Settings">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-2.9 1.2 2 2 0 1 1-4 0 1.7 1.7 0 0 0-2.9-1.2l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1A1.7 1.7 0 0 0 3 15a2 2 0 1 1 0-4 1.7 1.7 0 0 0 1.5-2.6l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1A1.7 1.7 0 0 0 10 4.1a2 2 0 1 1 4 0 1.7 1.7 0 0 0 2.9 1.2l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1A1.7 1.7 0 0 0 21 11a2 2 0 1 1 0 4z"/>
+        </svg>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <!-- ============ Connect ============ -->
+    <section id="connectPane">
+      <div class="hero">
+        <div class="heroglow" aria-hidden="true">
+          <img class="applogo" src="__APP_ICON__" alt="">
+        </div>
+        <h1>No installation, unlimited speed, no public IP needed</h1>
+        <p>P2P direct transfer for large files, encrypted browser-to-browser; automatically switches signaling lines if connection fails, can also configure TURN relay as fallback. <strong>File content does not pass through any server.</strong></p>
+        <ul class="herofacts">
+          <li><i class="factdot"></i>End-to-End Encryption</li>
+          <li><i class="factdot"></i>No Server Relay</li>
+          <li><i class="factdot"></i>Zero Installation</li>
+        </ul>
+      </div>
+
+      <div class="cards">
+        <div class="card">
+          <h2><span class="step">1</span> I want to send (Generate code)</h2>
+          <p>Send the code or link to your friend and wait for them to connect.</p>
+          <button class="primary big" id="btnCreate">Generate Code</button>
+          <div id="codeBox" class="hidden">
+            <div class="codebox">
+              <div class="codebox-main">
+                <span class="codelabel">9-Digit Code</span>
+                <div class="code" id="codeText">-</div>
+                <div class="codetip">Read to friend / Long press to copy</div>
+              </div>
+              <div class="qrwrap">
+                <canvas id="qrCanvas" class="qr" width="200" height="200"></canvas>
+                <span class="qrcap">Scan to open</span>
+              </div>
+            </div>
+            <div class="linkrow" id="linkRow">
+              <input id="linkText" readonly aria-label="Share Link">
+            </div>
+            <div class="row" style="margin-top:8px">
+              <button class="primary" id="btnCopyLink">Copy Link</button>
+            </div>
+            <div class="tiny muted" id="shareHint" style="margin-top:8px"></div>
+            <div class="waiting"><span class="dot"></span> Waiting for friend to connect...</div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2><span class="step">2</span> I want to receive (Enter code)</h2>
+          <p>Enter the 9-digit code given by your friend.</p>
+          <div class="joinrow">
+            <input id="joinCode" placeholder="e.g. K7M2P9XQ4" maxlength="14" autocomplete="off" spellcheck="false" aria-label="Code">
+            <button class="primary" id="btnJoin">Connect</button>
+          </div>
+          <p class="tiny muted" id="joinHint" style="margin-top:10px">Tip: Phones can directly scan the QR code on the other's screen.</p>
+        </div>
+      </div>
+
+      <div class="tips">
+        <div><b>Why is it fast?</b>文件在两台设备之间直接跑，No Server Relay、不排队、不限速。速度上限 = 你们双方的上行带宽或局域网带宽。</div>
+        <div><b>Is it safe?</b>Connect由 DTLS End-to-End Encryption，Code只用于牵线；服务器只帮忙交换Connect地址，看不到文件内容。</div>
+        <div><b>What if it can't connect?</b>The program tries multiple lines automatically; if both are under strict NATs, TURN relays can be used as a fallback (see guide).</div>
+      </div>
+
+      <div id="connTrouble" class="trouble hidden"></div>
+
+      <div class="logwrap">
+        <div class="loghead"><span>Run Log</span> <button class="link" id="btnClearLog">Clear</button></div>
+        <div class="log" id="logBox"></div>
+      </div>
+    </section>
+
+    <!-- ============ 会话 ============ -->
+    <section id="sessionPane" class="hidden">
+      <div class="peerbar">
+        <div class="peerinfo">
+          <span class="dot ok"></span>
+          <b id="peerName">Peer</b>
+          <span class="muted" id="connKind"></span>
+        </div>
+        <div class="peeract">
+          <button class="danger ghost" id="btnLeave">断开Connect</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-tab="files">File Transfer</button>
+        <button class="tab" data-tab="sync">Folder Sync</button>
+      </div>
+
+      <!-- File Transfer -->
+      <div id="tab-files" class="tabpane">
+        <div class="dropzone" id="dropZone">
+          <div class="bigicon">
+            <svg viewBox="0 0 24 24" fill="none" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M3 7.5A1.5 1.5 0 0 1 4.5 6h4l1.6 2H19.5A1.5 1.5 0 0 1 21 9.5v7A1.5 1.5 0 0 1 19.5 18h-15A1.5 1.5 0 0 1 3 16.5z"/>
+              <path d="M12 16v-5M9.8 13.2 12 11l2.2 2.2"/>
+            </svg>
+          </div>
+          <div class="dztitle">Drag and drop files or folders here</div>
+          <div class="dzsub">Release mouse to start transferring instantly, no servers involved</div>
+          <div class="row center">
+            <button class="primary big" id="btnPickFiles">Select File</button>
+            <button class="big ghost" id="btnPickFolder">Select File夹</button>
+          </div>
+          <div class="tiny muted" id="dropHint" style="margin-top:10px"></div>
+        </div>
+
+        <div class="savebar">
+          <span>Save Location: <b id="saveDirName">浏览器下载目录（大文件请Select File夹）</b></span>
+          <span class="row">
+            <button id="btnPickSaveDir">Select Save Directory</button>
+            <button id="btnPickSaveDir2" class="hidden">Reselect</button>
+          </span>
+        </div>
+
+        <div class="speedbar">
+          <span>Total Speed <b id="totalSpeed">-</b></span>
+          <span class="muted" id="queueInfo"></span>
+        </div>
+
+        <div id="fileList" class="filelist"></div>
+      </div>
+
+      <!-- Folder Sync -->
+      <div id="tab-sync" class="tabpane hidden">
+        <div class="card">
+          <h2>Folder Two-Way Sync</h2>
+          <p>Choose a local folder, both sides will keep contents identical (supports incremental, resume, auto-watch).</p>
+          <div class="row wrap">
+            <button id="btnPickSyncDir" class="primary">Select Local Sync Folder</button>
+            <span class="muted" id="syncDirName">Not selected</span>
+          </div>
+          <div class="row wrap mt" style="gap:16px">
+            <label class="row" style="gap:6px">Sync Mode
+              <select id="syncMode">
+                <option value="two-way">Two-way (mutual sync)</option>
+                <option value="up">单向：只把本机推给Peer</option>
+                <option value="down">单向：只把Peer拉过来</option>
+              </select>
+            </label>
+            <label class="switch"><input type="checkbox" id="syncDelete"><span class="track"><span class="thumb"></span></span><span>Sync Deletions</span></label>
+            <label class="switch"><input type="checkbox" id="syncWatch"><span class="track"><span class="thumb"></span></span><span>Auto-Watch (every 5s, only active on initiator)</span></label>
+            <button id="btnSyncNow" class="primary">Sync Now</button>
+          </div>
+          <p class="tiny muted" style="margin-top:12px">提示：双方都要在各自机器上选择同步文件夹，否则Peer会提示"未Settings同步目录"。</p>
+          <div id="syncPlan" class="syncplan hidden"></div>
+        </div>
+        <div class="logwrap">
+          <div class="loghead"><span>Sync Log</span></div>
+          <div class="log" id="syncLog"></div>
+        </div>
+      </div>
+
+      <!-- Connect诊断：速度慢的时候用它判断"慢在哪" -->
+      <div class="card diag">
+        <div class="diaghead">
+          <h3>Connect诊断</h3>
+          <span class="muted tiny" id="dgHint">Connect后自动开始采样（每秒一次）</span>
+          <button class="subtle" id="btnDiagCopy" style="margin-left:auto">Copy Diagnostic Info</button>
+        </div>
+        <div class="diaggrid">
+          <div class="dgitem"><span class="dgk">Link</span><span class="dgv" id="dgLink">等待Connect</span></div>
+          <div class="dgitem"><span class="dgk">Latency RTT</span><span class="dgv" id="dgRtt">-</span></div>
+          <div class="dgitem"><span class="dgk">Jitter</span><span class="dgv" id="dgJit">-</span></div>
+          <div class="dgitem"><span class="dgk">Available BW</span><span class="dgv" id="dgBw">-</span></div>
+          <div class="dgitem"><span class="dgk">Real-time Speed</span><span class="dgv" id="dgSpeed">-</span></div>
+          <div class="dgitem"><span class="dgk">Peak / Avg</span><span class="dgv" id="dgPeak">-</span></div>
+          <div class="dgitem"><span class="dgk">Stall Count</span><span class="dgv" id="dgStall">-</span></div>
+          <div class="dgitem"><span class="dgk">Candidate Type</span><span class="dgv" id="dgCand">-</span></div>
+        </div>
+        <div class="chartwrap">
+          <canvas id="dgChart" height="52"></canvas>
+        </div>
+        <div class="dgverdict" id="dgVerdict">Connect后这里会给出"慢在哪"的判断。</div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <span>__APP_NAME__ v__APP_VER__ · 构建 __APP_BUILD__</span>
+    <span class="muted">P2P 直连 · End-to-End Encryption · 不限速 · 无广告</span>
+  </footer>
+</div>
+
+<!-- 隐藏输入 -->
+<input type="file" id="fileInput" multiple hidden>
+<input type="file" id="dirInput" webkitdirectory directory multiple hidden>
+
+<!-- Settings -->
+<dialog id="settingsDialog" class="dlg">
+  <form method="dialog">
+    <header class="dlghead">
+      <h2>Settings</h2>
+      <p class="tiny muted">改动在下次建立Connect时生效；留空即用默认线路。</p>
+    </header>
+    <div class="dlgbody">
+      <label class="field">设备名称（Peer看到的名字）
+        <input id="setDeviceName" maxlength="24">
+      </label>
+      <label class="field">TURN Relay Server (optional, for strict NAT)
+        <input id="setTurnUrl" placeholder="turn:your-server:3478 或 turns:服务器:5349">
+      </label>
+      <label class="field">Relay Server (fallback if P2P fails)
+        <input id="setRelayUrl" placeholder="wss://your-server:9443">
+      </label>
+      <label class="switch" style="margin-top:8px"><input type="checkbox" id="setForceRelay"><span class="track"><span class="thumb"></span></span><span>Force Relay (skip P2P, for testing/extreme networks)</span></label>
+      <div class="row">
+        <label class="field grow">TURN Username<input id="setTurnUser"></label>
+        <label class="field grow">TURN Password<input id="setTurnPass" type="password"></label>
+      </div>
+      <div class="row">
+        <label class="field grow">Data Chunk Size
+          <select id="setChunk">
+            <option value="16384">16 KB (Most stable)</option>
+            <option value="65536">64 KB (Recommended)</option>
+            <option value="131072">128 KB (High speed)</option>
+            <option value="262144">256 KB (Extreme)</option>
+          </select>
+        </label>
+        <label class="field grow">Send Buffer Limit
+          <select id="setBuffer">
+            <option value="4194304">4 MB (Conservative)</option>
+            <option value="8388608">8 MB</option>
+            <option value="12582912">12 MB (Recommended)</option>
+          </select>
+        </label>
+      </div>
+      <label class="field">Signaling Servers (one per line, tried in order)
+        <textarea id="setBrokers" rows="3" placeholder="wss://broker.emqx.io:8084/mqtt"></textarea>
+      </label>
+      <div class="row mt">
+        <button class="danger ghost" id="btnClearResume" type="button">Clear断点续传缓存</button>
+        <button class="danger ghost" id="btnClearSync" type="button">Clear同步状态</button>
+      </div>
+      <p class="tiny muted" id="capText" style="margin-top:12px"></p>
+    </div>
+    <footer class="dlgfoot">
+      <button value="cancel">Cancel</button>
+      <button class="primary" id="btnSaveSettings" value="ok">Save</button>
+    </footer>
+  </form>
+</dialog>
+
+<div id="toasts"></div>
+
+<!--SCRIPTS-->
+</body>
+</html>

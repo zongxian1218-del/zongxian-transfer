@@ -1,4 +1,4 @@
-"""棕仙的传输软件 命令行：参数解析与子命令。
+"""Zongxian Transfer CLI: argument parsing and subcommands.
 
 ::
 
@@ -6,7 +6,7 @@
     python -m swiftdrop peers
     python -m swiftdrop recv  [--dir D] [--port 45880]
     python -m swiftdrop send  <ip|名称> <路径...> [--streams 4]
-    python -m swiftdrop sync  <ip|名称> <本地目录> [--two-way|--one-way]
+    python -m swiftdrop sync  <ip|名称> <Local directory> [--two-way|--one-way]
                               [--delete-extra] [--watch] [--interval 3]
     python -m swiftdrop webhost [--dir 目录] [--port 8787] [--html 路径]
     python -m swiftdrop relay [--port 8788]
@@ -14,7 +14,7 @@
     python -m swiftdrop autostart {on,off,status}
     python -m swiftdrop folders {add,remove,list}
 
-进度一律用「单行原地刷新」的进度条 + MB/s + ETA，不刷屏。
+Progress is displayed using a single-line in-place refresh progress bar + MB/s + ETA, without spamming the screen.
 """
 
 from __future__ import annotations
@@ -227,7 +227,7 @@ def cmd_group(args: argparse.Namespace) -> int:
         for line in install_lines():
             print(line, flush=True)
         print("", flush=True)
-        print("（另一种选择：双方都在严格 NAT 时用手机热点，或自建中继。详见使用说明。）", flush=True)
+        print("（另一种选择：双方都在严格 NAT 时用手机热点，或自建中继。详见Usage Guide。）", flush=True)
         return 1
 
     print("检测到的异地组网地址：", flush=True)
@@ -369,13 +369,13 @@ def _start_local_receiver(dest: str, port: int, args: argparse.Namespace,
 
 
 def cmd_sync(args: argparse.Namespace) -> int:
-    _banner("目录同步")
+    _banner("Directory sync")
     host, port = resolve_target(args.target, timeout=args.timeout)
     if args.port:
         port = args.port
     local = os.path.abspath(args.dir)
     if not os.path.isdir(local):
-        print(f"错误：本地目录不存在 {local}", file=sys.stderr, flush=True)
+        print(f"错误：Local directory不存在 {local}", file=sys.stderr, flush=True)
         return 2
     two_way = not args.one_way
     tty = _TTY()
@@ -436,7 +436,7 @@ def cmd_sync(args: argparse.Namespace) -> int:
 # --------------------------------------------------------------------------
 
 def cmd_webhost(args: argparse.Namespace) -> int:
-    _banner("局域网静态服务 + 信令中继")
+    _banner("LAN static server + signaling relay")
     from .webhost import DEFAULT_INDEX, WebHost, default_root
 
     root = os.path.abspath(args.dir) if args.dir else default_root()
@@ -872,12 +872,12 @@ def build_parser() -> argparse.ArgumentParser:
         dest="cmd",
         metavar="{gui,peers,recv,send,sync,webhost,relay,autosync,autostart,folders}")
 
-    g = sub.add_parser("gui", help="打开图形界面")
+    g = sub.add_parser("gui", help="Open Graphical UI")
     g.add_argument("--port", type=int, default=DATA_PORT, help="接收/数据端口")
     g.add_argument("--dir", default=None, help="默认目录")
     g.set_defaults(func=cmd_gui)
 
-    q = sub.add_parser("peers", help="列出发现的设备")
+    q = sub.add_parser("peers", help="List discovered devices")
     q.add_argument("--timeout", type=float, default=3.0, help="收集秒数（默认 3）")
     q.add_argument("--once", action="store_true", help="只打印一次就退出")
     q.add_argument("--duration", type=float, default=0.0,
@@ -885,119 +885,119 @@ def build_parser() -> argparse.ArgumentParser:
     q.add_argument("--data-port", type=int, default=DATA_PORT, help="广播的数据端口")
     q.set_defaults(func=cmd_peers)
 
-    g = sub.add_parser("group", help="异地组网：识别 Radmin/Tailscale 等虚拟局域网地址")
-    g.add_argument("--port", type=int, default=8787, help="网页版端口（默认 8787）")
+    g = sub.add_parser("group", help="Remote virtual LAN: Identify Radmin/Tailscale etc. virtual LAN addresses")
+    g.add_argument("--port", type=int, default=8787, help="网页版Port (default 8787)")
     g.set_defaults(func=cmd_group)
 
-    r = sub.add_parser("recv", help="进入接收模式")
+    r = sub.add_parser("recv", help="Enter receive mode")
     r.add_argument("--dir", default=os.path.join(os.getcwd(), "swiftdrop-recv"),
                    help="接收目录")
     r.add_argument("--port", type=int, default=DATA_PORT, help="数据端口（默认 45880）")
     r.add_argument("--chunk-mb", type=float, default=None,
-                   help="本端接收分片大小（MB，默认 4）")
-    r.add_argument("--name", default=None, help="对外显示的设备名")
+                   help="Receive chunk size in MB (default 4)")
+    r.add_argument("--name", default=None, help="Device name to display")
     r.add_argument("--delete-extra", action="store_true",
-                   help="允许对端要求删除多余文件（同步用）")
-    r.add_argument("--sync-dir", default=None, help="被动同步目录（默认同 --dir）")
+                   help="Allow remote to request deletion of extra files (for sync)")
+    r.add_argument("--sync-dir", default=None, help="Passive sync directory (default same as --dir)")
     r.set_defaults(func=cmd_recv)
 
-    s = sub.add_parser("send", help="发送文件/文件夹")
-    s.add_argument("target", help="ip、ip:端口 或设备名")
-    s.add_argument("paths", nargs="+", help="一个或多个文件/目录")
-    s.add_argument("--port", type=int, default=None, help="覆盖数据端口")
+    s = sub.add_parser("send", help="Send file/folder")
+    s.add_argument("target", help="ip, ip:port or device name")
+    s.add_argument("paths", nargs="+", help="One or more files/directories")
+    s.add_argument("--port", type=int, default=None, help="Override data port")
     s.add_argument("--streams", type=int, default=None,
-                   help=f"并发流数 1-8（默认按到目标的延迟自动选：局域网 {DEFAULT_STREAMS} 条、"
-                        f"跨网/异地组网最多 8 条）")
-    s.add_argument("--retries", type=int, default=3, help="单文件重试次数")
+                   help=f"Concurrent streams 1-8 (default auto based on latency: LAN {DEFAULT_STREAMS}  streams, "
+                        f"remote max 8 streams)")
+    s.add_argument("--retries", type=int, default=3, help="Single file retry count")
     s.add_argument("--chunk-mb", type=float, default=None,
-                   help="分片大小（MB，默认 4）")
-    s.add_argument("--timeout", type=float, default=3.0, help="设备名解析超时")
-    s.add_argument("--name", default=None, help="本机显示名")
+                   help="Chunk size in MB (default 4)")
+    s.add_argument("--timeout", type=float, default=3.0, help="Device name resolution timeout")
+    s.add_argument("--name", default=None, help="Local display name")
     s.set_defaults(func=cmd_send)
 
-    y = sub.add_parser("sync", help="目录同步")
-    y.add_argument("target", help="ip、ip:端口 或设备名")
-    y.add_argument("dir", help="本地目录")
+    y = sub.add_parser("sync", help="Directory sync")
+    y.add_argument("target", help="ip, ip:port or device name")
+    y.add_argument("dir", help="Local directory")
     mode = y.add_mutually_exclusive_group()
     mode.add_argument("--two-way", action="store_true", default=True,
-                      help="双向同步（默认）")
+                      help="Two-way sync (default)")
     mode.add_argument("--one-way", action="store_true",
-                      help="单向：本地覆盖远端")
+                      help="One-way: local overrides remote")
     y.add_argument("--delete-extra", action="store_true",
-                   help="删除另一边没有的文件（默认关）")
-    y.add_argument("--watch", action="store_true", help="持续监控同步")
-    y.add_argument("--interval", type=float, default=3.0, help="监控轮询秒数")
-    y.add_argument("--streams", type=int, default=DEFAULT_STREAMS, help="并发流数")
-    y.add_argument("--port", type=int, default=None, help="覆盖数据端口")
-    y.add_argument("--timeout", type=float, default=3.0, help="设备名解析超时")
-    y.add_argument("--name", default=None, help="本机显示名")
+                   help="Delete files missing on the other side (default off)")
+    y.add_argument("--watch", action="store_true", help="Continuous watch sync")
+    y.add_argument("--interval", type=float, default=3.0, help="Watch poll interval in seconds")
+    y.add_argument("--streams", type=int, default=DEFAULT_STREAMS, help="Concurrent streams")
+    y.add_argument("--port", type=int, default=None, help="Override data port")
+    y.add_argument("--timeout", type=float, default=3.0, help="Device name resolution timeout")
+    y.add_argument("--name", default=None, help="Local display name")
     y.add_argument("--no-recv", action="store_true",
-                   help="不启动本机接收端（纯推送模式）")
+                   help="Do not start local receiver (pure push mode)")
     y.set_defaults(func=cmd_sync)
 
-    w = sub.add_parser("webhost", help="局域网静态服务 + 信令中继")
-    w.add_argument("--dir", default=None, help="根目录（默认 dist 或当前目录）")
-    w.add_argument("--port", type=int, default=8787, help="端口（默认 8787）")
-    w.add_argument("--html", default=None, help="首页 html 文件路径")
+    w = sub.add_parser("webhost", help="LAN static server + signaling relay")
+    w.add_argument("--dir", default=None, help="Root dir (default dist or current dir)")
+    w.add_argument("--port", type=int, default=8787, help="Port (default 8787)")
+    w.add_argument("--html", default=None, help="Index html file path")
     w.set_defaults(func=cmd_webhost)
 
-    wa = sub.add_parser("webapp", help="跨网传输：内置网页版窗口（用系统 Edge/Chrome 作内核）")
-    wa.add_argument("--dir", default=None, help="网页版所在目录（默认 dist 或当前目录）")
-    wa.add_argument("--port", type=int, default=8787, help="内置服务端口（默认 8787）")
-    wa.add_argument("--width", type=int, default=1220, help="窗口宽（默认 1220）")
-    wa.add_argument("--height", type=int, default=880, help="窗口高（默认 880）")
+    wa = sub.add_parser("webapp", help="Cross-network transfer: built-in web app window (uses system Edge/Chrome)")
+    wa.add_argument("--dir", default=None, help="Web app directory (default dist or current dir)")
+    wa.add_argument("--port", type=int, default=8787, help="内置服务Port (default 8787)")
+    wa.add_argument("--width", type=int, default=1220, help="Window width (default 1220)")
+    wa.add_argument("--height", type=int, default=880, help="Window height (default 880)")
     wa.add_argument("--no-profile", action="store_true",
-                    help="用你当前浏览器的配置打开（默认用独立配置，不干扰你自己的浏览器）")
+                    help="Open with your current browser profile (default uses independent profile)")
     wa.add_argument("--app-window", action="store_true",
-                    help="尝试无地址栏的应用窗口（默认交给系统默认浏览器打开，最稳）")
-    wa.add_argument("--quiet", action="store_true", help="少打印日志")
+                    help="Try frameless app window (default uses system default browser)")
+    wa.add_argument("--quiet", action="store_true", help="Print less logs")
     wa.set_defaults(func=cmd_webapp)
 
-    v = sub.add_parser("relay", help="WebSocket 信令中继（默认端口 8788）")
-    v.add_argument("--port", type=int, default=8788, help="端口（默认 8788）")
-    v.add_argument("--verbose", action="store_true", help="打印每条中继日志")
+    v = sub.add_parser("relay", help="WebSocket signaling relay (default port 8788)")
+    v.add_argument("--port", type=int, default=8788, help="Port (default 8788)")
+    v.add_argument("--verbose", action="store_true", help="Print every relay log")
     v.set_defaults(func=cmd_relay)
 
-    a = sub.add_parser("autosync", help="开机自启的无界面同步守护进程")
+    a = sub.add_parser("autosync", help="Headless sync daemon on startup")
     a.add_argument("--hidden", action="store_true",
-                   help="隐藏控制台黑窗口（开机自启命令用的就是这个）")
-    a.add_argument("--verbose", action="store_true", help="日志同时打到控制台")
+                   help="Hide console window (used for autostart)")
+    a.add_argument("--verbose", action="store_true", help="Log to console as well")
     a.add_argument("--interval", type=float, default=None,
-                   help="覆盖配置里的轮询秒数（调试用）")
+                   help="Override poll interval in config (for debugging)")
     a.add_argument("--discover-timeout", type=float, default=3.0,
-                   help="设备名解析超时秒数")
+                   help="Device name resolution timeout秒数")
     a.add_argument("--status", action="store_true",
-                   help="只打印配置与自启状态，然后退出")
+                   help="Print config and autostart status, then exit")
     a.add_argument("--once", action="store_true",
-                   help="每个文件夹只跑一轮就退出（调试/自测用）")
+                   help="Run one pass per folder then exit (for testing)")
     a.set_defaults(func=cmd_autosync)
 
-    s2 = sub.add_parser("autostart", help="开机自启开关（注册表 Run 项）")
+    s2 = sub.add_parser("autostart", help="Autostart switch (registry Run key)")
     s2.add_argument("action", choices=("on", "off", "status"),
-                    help="on=开启 / off=关闭 / status=查看")
+                    help="on=enable / off=disable / status=view")
     s2.set_defaults(func=cmd_autostart)
 
-    f = sub.add_parser("folders", help="管理开机同步的文件夹")
+    f = sub.add_parser("folders", help="Manage folders for autostart sync")
     fsub = f.add_subparsers(dest="action", metavar="{add,remove,list}")
-    fa = fsub.add_parser("add", help="登记一个同步文件夹")
-    fa.add_argument("local", help="本地文件夹路径")
-    fa.add_argument("--peer", default="", help="对端设备名（局域网发现用）")
-    fa.add_argument("--host", default="", help="对端 IP（跳过设备发现）")
-    fa.add_argument("--port", type=int, default=DATA_PORT, help="对端数据端口")
-    fa.add_argument("--one-way", action="store_true", help="单向：本地覆盖远端")
+    fa = fsub.add_parser("add", help="Register a sync folder")
+    fa.add_argument("local", help="Local folder path")
+    fa.add_argument("--peer", default="", help="Peer device name (for LAN discovery)")
+    fa.add_argument("--host", default="", help="Peer IP (skip discovery)")
+    fa.add_argument("--port", type=int, default=DATA_PORT, help="Peer data port")
+    fa.add_argument("--one-way", action="store_true", help="One-way: local overrides remote")
     fa.add_argument("--delete-extra", action="store_true",
-                    help="删除另一边没有的文件（默认关）")
-    fa.add_argument("--interval", type=float, default=5.0, help="轮询秒数（默认 5）")
-    fa.add_argument("--no-mark-icon", action="store_true", help="不改文件夹图标")
+                    help="Delete files missing on the other side (default off)")
+    fa.add_argument("--interval", type=float, default=5.0, help="Poll interval (default 5)")
+    fa.add_argument("--no-mark-icon", action="store_true", help="Do not change folder icon")
     fa.add_argument("--no-autostart", action="store_true",
-                    help="只登记文件夹，不动开机自启")
+                    help="Only register folder, do not touch autostart")
     fa.set_defaults(func=cmd_folders)
-    fr = fsub.add_parser("remove", help="取消登记一个同步文件夹")
-    fr.add_argument("local", help="本地文件夹路径")
-    fr.add_argument("--keep-icon", action="store_true", help="保留文件夹图标标记")
+    fr = fsub.add_parser("remove", help="取消Register a sync folder")
+    fr.add_argument("local", help="Local folder path")
+    fr.add_argument("--keep-icon", action="store_true", help="Keep folder icon mark")
     fr.set_defaults(func=cmd_folders)
-    fl = fsub.add_parser("list", help="列出已登记的文件夹")
-    fl.add_argument("--json", action="store_true", help="输出 JSON（给自动化用）")
+    fl = fsub.add_parser("list", help="List registered folders")
+    fl.add_argument("--json", action="store_true", help="Output JSON (for automation)")
     fl.set_defaults(func=cmd_folders)
     f.set_defaults(func=cmd_folders, action="list")
     return p

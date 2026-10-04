@@ -6,16 +6,7 @@
 > 名字来自作者的角色「棕仙」。图标/角色形象归作者所有。
 > **这是一个欢迎改进的开源项目** —— 想参与请看 [CONTRIBUTING.md](CONTRIBUTING.md)（里面列了最需要帮助的方向）。
 
-<details>
-<summary><b>English</b></summary>
-
-**Zongxian Transfer** — a no-server, no-public-IP, unlimited-speed file transfer tool for sending large files to friends.
-Three forms: a **single-file web app** (just send the HTML file), a **Windows desktop app** (fastest on LAN via multi-stream TCP + folder sync), and **any phone browser** (same Wi-Fi, or over a virtual LAN such as Tailscale/Radmin VPN).
-Built with the Python standard library only (desktop side) and dependency-free classic scripts (web side).
-Peer-to-peer over WebRTC with hand-rolled MQTT signaling for the web app; multi-stream TCP with resumable 4 MB SHA-256 chunks for the desktop app.
-**Contributions welcome** — see [CONTRIBUTING.md](CONTRIBUTING.md). Licensed MIT (code), artwork excluded.
-
-</details>
+[English Version (README_en.md)](README_en.md)
 
 
 ---
