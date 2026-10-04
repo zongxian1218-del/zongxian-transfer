@@ -1,6 +1,10 @@
 /* 验证 file:// 直接双击打开时，各关键能力是否可用 */
 import { chromium } from 'playwright';
-const FILE = 'file:///D:/文档/ai001/dist/swiftdrop.html';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const FILE = pathToFileURL(path.join(ROOT, 'dist', 'swiftdrop.html')).href;
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 
 for (const url of [FILE, 'http://127.0.0.1:8799/dist/swiftdrop.html']) {

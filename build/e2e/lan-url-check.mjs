@@ -1,5 +1,9 @@
 /* 验证桌面版内置窗口传给页面的局域网地址（?lan=）会被正确用作分享链接/二维码 */
 import { chromium } from 'playwright';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const LAN = 'http://192.168.1.50:8787/swiftdrop.html';
 const URL = 'file:///D:/文档/ai001/dist/swiftdrop.html?lan=' + encodeURIComponent(LAN);
 const browser = await chromium.launch({ channel: 'msedge', headless: true });

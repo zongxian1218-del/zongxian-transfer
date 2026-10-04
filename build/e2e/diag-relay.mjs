@@ -1,4 +1,8 @@
 import { chromium } from 'playwright';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const ctx = await browser.newContext();
 await ctx.route('**/*', async (route) => {

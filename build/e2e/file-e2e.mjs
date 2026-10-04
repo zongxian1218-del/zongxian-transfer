@@ -5,9 +5,12 @@ import { chromium } from 'playwright';
 import crypto from 'node:crypto';
 import fs from 'node:fs';
 import path from 'node:path';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
-const FILE = 'file:///D:/文档/ai001/dist/swiftdrop.html';
-const TMP = 'D:\\文档\\ai001\\tmp\\file';
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+
+const FILE = pathToFileURL(path.join(ROOT, 'dist', 'swiftdrop.html')).href;
+const TMP = path.join(ROOT, 'tmp', 'file');
 fs.rmSync(TMP, { recursive: true, force: true });
 fs.mkdirSync(TMP, { recursive: true });
 const F = path.join(TMP, 'file-protocol-test.bin');

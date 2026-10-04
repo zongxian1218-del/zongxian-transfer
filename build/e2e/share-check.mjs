@@ -1,6 +1,10 @@
 /* 验证：本地打开（file://）时，链接与二维码必须被隐藏，只留取件码 */
 import { chromium } from 'playwright';
-const FILE = 'file:///D:/文档/ai001/dist/swiftdrop.html';
+import { fileURLToPath, pathToFileURL } from 'node:url';
+import path from 'node:path';
+
+const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');
+const FILE = pathToFileURL(path.join(ROOT, 'dist', 'swiftdrop.html')).href;
 const browser = await chromium.launch({ channel: 'msedge', headless: true });
 const ctx = await browser.newContext();
 const page = await ctx.newPage();

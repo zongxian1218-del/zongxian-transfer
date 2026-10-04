@@ -44,6 +44,11 @@ node build/e2e/e2e.mjs           # 网页版 8/8
 
 > 注意：`tests/test_lan.py` 的第 1 项是"200MB 速度下限 50MB/s"，在负载高的机器上会擦线失败（不是功能问题，见 issue 讨论）。
 
+> 另外：`build/e2e/` 里的浏览器端脚本目前**硬编码了作者本机的工程路径**（形如 `const ROOT = 'D:\\文档\\ai001';`），
+> 克隆后请把它改成你自己的路径——或者更推荐改成按脚本位置推导：
+> `const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..', '..');`
+> （欢迎有人提 PR 把所有脚本统一改掉，这是很好的"第一个 PR"。）
+
 ## 提交 Pull Request
 
 1. Fork → 新建分支（`fix/xxx`、`feat/xxx`）；
