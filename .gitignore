@@ -1,0 +1,48 @@
+# 构建产物 / 依赖 / 大文件（仓库只放源码与文档）
+dist/*.exe
+dist/*.zip
+dist/*.msi
+dist/*.apk
+dist/android/
+dist/棕仙的传输软件/
+dist/棕仙的传输软件-*
+dist/swiftdrop.html
+dist/zongxian-icon.png
+dist/zongxian.ico
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+build/qrvenv/
+build/net-venv/
+build/pack-venv/
+build/pyi-onedir/
+build/msi-out/
+build/downloads/
+build/android-sdk/
+build/jdk/
+build/nsis/
+build/wix/
+build/innosetup/
+build/e2e/node_modules/
+build/e2e/package-lock.json
+
+# 安卓签名材料：**私钥与口令绝不入库**
+build/android/
+
+# 运行期数据与测试残留
+tmp/
+swiftdrop-recv/
+*.log
+trace.txt
+
+# 编辑器 / 系统
+.vscode/
+.idea/
+Thumbs.db
+desktop.ini
+_mc_opt/
+.dsh/
