@@ -43,6 +43,7 @@ INCLUDE = [
     "build/verify-desktop.py",
     "build/verify-diag.py",
     "build/push-github.py",
+    "build/publish-release.py",
     "build/entry.py",
     "build/installer.nsi",
     "build/sfx.nsi",
